@@ -30,7 +30,7 @@ button.on{background:var(--acc)}
 </style></head><body>
 <canvas id="gl"></canvas><div id="hs"></div><div id="fade"></div>
 <div id="bar"><div id="title">97㎡ 실내 360 투어</div>
-<button id="bz+">+ 확대</button><button id="bz-">− 축소</button><button id="btour">▶ 자동투어</button><button id="brot">↻ 자동회전</button><button id="brst">⟲ 초기화</button><button id="bshot">📷 PNG 저장</button><button id="bfs">⛶ 전체화면</button></div>
+<button id="bz+">+ 확대</button><button id="bz-">− 축소</button><button id="btour">▶ 자동투어</button><button id="brot">↻ 자동회전</button><button id="brst">⟲ 초기화</button><button id="bshot">📷 현재 화면 PNG</button><button id="bpano">🖼 전체(원본) PNG</button><button id="bfs">⛶ 전체화면</button></div>
 <div id="dp"><span></span><button data-d="u">▲</button><span></span><button data-d="l">◀</button><button data-d="z" title="초기화">●</button><button data-d="r">▶</button><span></span><button data-d="d">▼</button><span></span></div>
 <div id="brand">케이디자인랩</div><div id="cur"></div>
 <div id="mm"><div id="mmh"><span id="mmt">평면도</span><span id="mmx">접기</span></div><canvas id="mmc"></canvas></div>
@@ -135,6 +135,12 @@ document.getElementById('bshot').onclick=()=>{
    navigator.share({files:[f]}).catch(e=>{if(e&&e.name!=='AbortError')showImg(b,name)});return}
   const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),4000);toast('PNG 저장: '+name)},'image/png')};
+// 전체 파노라마 원본(4096×2048) PNG 저장: 지금 지점의 사진 전체, 가장 고화질
+document.getElementById('bpano').onclick=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);
+ const name='97A_'+P[cur].name.replace(/[·\s]/g,'')+'_전체.png';
+ c.toBlob(b=>{if(!b){toast('저장하지 못했습니다');return}const f=new File([b],name,{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){navigator.share({files:[f]}).catch(e=>{if(e&&e.name!=='AbortError')showImg(b,name)});return}
+  const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('PNG 저장: '+name)},'image/png')};im.src=IM[cur]};
 function stopTour(){tour=false;clearInterval(tourT);document.getElementById('btour').classList.remove('on');document.getElementById('btour').textContent='▶ 자동투어'}
 document.getElementById('btour').onclick=()=>{if(tour)return stopTour();tour=true;stopAuto();const b=document.getElementById('btour');b.classList.add('on');b.textContent='■ 투어 중지';
  let k=cur;tourT=setInterval(()=>{k=(k+1)%P.length;go(k,false)},6500)};
